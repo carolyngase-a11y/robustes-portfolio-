@@ -1,195 +1,832 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-  <meta charset="UTF-8">
-  <title>Robustes Portfolio</title>
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #f5f5f7;
-      margin: 0;
-      padding: 40px;
-      color: #1d1d1f;
-    }
-
-    h1 {
-      font-size: 32px;
-      margin-bottom: 10px;
-    }
-
-    .container {
-      max-width: 1100px;
-      margin: auto;
-    }
-
-    .card {
-      background: white;
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
-    }
-
-    input, textarea {
-      width: 100%;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #ddd;
-      margin-top: 5px;
-      margin-bottom: 10px;
-    }
-
-    .result {
-      font-weight: bold;
-    }
-
-    .highlight {
-      border: 2px dashed #ccc;
-      text-align: center;
-      padding: 20px;
-      border-radius: 16px;
-      margin-bottom: 20px;
-    }
-
-    .arrow {
-      text-align: center;
-      font-size: 20px;
-      margin: 10px 0;
-      color: #888;
-    }
-
-    button {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 10px;
-      background: black;
-      color: white;
-      cursor: pointer;
-    }
-
-    @media print {
-      button { display: none; }
-      body { background: white; }
-    }
-  </style>
-</head>
-
-<body>
-<div class="container">
-
-  <h1>Robustes Portfolio</h1>
-
-  <div class="card">
-    <label>Kundename</label>
-    <input id="name">
-
-    <label>Datum</label>
-    <input id="date" type="date">
-
-    <label>Gesamtsumme (€)</label>
-    <input id="total" type="number" oninput="calculate()">
-  </div>
-
-  <!-- Tagesgeld -->
-  <div class="card">
-    <h2>Tagesgeld</h2>
-    <input placeholder="Betrag" id="tagesgeld" type="number" oninput="calculate()">
-    <input placeholder="Sockelbetrag (optional)" id="tagesgeldSockel" type="number">
-    <textarea placeholder="Notizen"></textarea>
-  </div>
-
-  <div class="arrow">⬇ Überlauf ⬇</div>
-
-  <!-- Hauptportfolio -->
-  <div class="card">
-    <h2>Portfolio</h2>
-
-    <div class="grid">
-      <div>
-        <h3>Krisenkasse</h3>
-        <input placeholder="Betrag" id="krise" type="number" oninput="calculate()">
-        <input placeholder="Sockelbetrag" id="kriseSockel" type="number">
-        <textarea placeholder="Notizen"></textarea>
-        <div class="result" id="krisePct"></div>
-      </div>
-
-      <div>
-        <h3>Investitionsreserve</h3>
-        <input placeholder="Betrag" id="reserve" type="number" oninput="calculate()">
-        <textarea placeholder="Notizen"></textarea>
-        <div class="result" id="reservePct"></div>
-      </div>
-
-      <div>
-        <h3>Vermögensverwaltung</h3>
-        <input placeholder="Betrag" id="vv" type="number" oninput="calculate()">
-        <textarea placeholder="Notizen"></textarea>
-        <div class="result" id="vvPct"></div>
-      </div>
-
-      <div>
-        <h3>Märkte / Branchen</h3>
-        <input placeholder="Betrag" id="markt" type="number" oninput="calculate()">
-        <textarea placeholder="Notizen"></textarea>
-        <div class="result" id="marktPct"></div>
-      </div>
-
-      <div>
-        <h3>Spezialitäten</h3>
-        <input placeholder="Betrag" id="spezial" type="number" oninput="calculate()">
-        <textarea placeholder="Notizen"></textarea>
-        <div class="result" id="spezialPct"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Ergebnis -->
-  <div class="card">
-    <h2>Übersicht</h2>
-    <div id="summary"></div>
-  </div>
-
-  <button onclick="window.print()">Drucken / PDF</button>
-
-</div>
-
-<script>
-function calculate() {
-  let total = parseFloat(document.getElementById("total").value) || 0;
-
-  let fields = {
-    krise: "krisePct",
-    reserve: "reservePct",
-    vv: "vvPct",
-    markt: "marktPct",
-    spezial: "spezialPct"
-  };
-
-  let sum = 0;
-
-  for (let key in fields) {
-    let val = parseFloat(document.getElementById(key).value) || 0;
-    sum += val;
-
-    let pct = total ? ((val / total) * 100).toFixed(1) : 0;
-    document.getElementById(fields[key]).innerText = pct + " %";
-  }
-
-  let tagesgeld = parseFloat(document.getElementById("tagesgeld").value) || 0;
-  sum += tagesgeld;
-
-  let diff = total - sum;
-
-  document.getElementById("summary").innerText =
-    "Verteilt: " + sum + " € | Differenz: " + diff + " €";
-}
-</script>
-
-</body>
-</html>
+diff --git a/index.html b/index.html
+index c2b72e6ec35692b156d9abf6d13541fb6875d002..c9757fa351fe9fe1aee3d0f2bd5f0da76b650475 100644
+--- a/index.html
++++ b/index.html
+@@ -1,195 +1,692 @@
+ <!DOCTYPE html>
+ <html lang="de">
+ <head>
+-  <meta charset="UTF-8">
++  <meta charset="UTF-8" />
++  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <title>Robustes Portfolio</title>
+   <style>
++    :root {
++      --bg: #f4f4f2;
++      --surface: #ffffff;
++      --surface-soft: #fbfbfa;
++      --text: #1e2228;
++      --muted: #6f7783;
++      --line: #e6e9ed;
++      --accent: #2f6df6;
++      --accent-soft: #ecf2ff;
++      --success: #1f9e64;
++      --warning: #b47500;
++      --danger: #b0363d;
++      --shadow-sm: 0 10px 30px rgba(18, 26, 39, 0.05);
++      --shadow-md: 0 18px 45px rgba(18, 26, 39, 0.09);
++      --radius-lg: 24px;
++      --radius-md: 16px;
++      --radius-sm: 12px;
++    }
++
++    * {
++      box-sizing: border-box;
++    }
++
+     body {
+-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+-      background: #f5f5f7;
+       margin: 0;
+-      padding: 40px;
+-      color: #1d1d1f;
++      font-family: "Inter", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
++      background: var(--bg);
++      color: var(--text);
++      padding: 34px;
++      line-height: 1.4;
+     }
+ 
+-    h1 {
+-      font-size: 32px;
+-      margin-bottom: 10px;
++    .container {
++      max-width: 1260px;
++      margin: 0 auto;
++      display: grid;
++      gap: 24px;
+     }
+ 
+-    .container {
+-      max-width: 1100px;
+-      margin: auto;
++    .panel {
++      background: var(--surface);
++      border: 1px solid rgba(16, 24, 40, 0.05);
++      border-radius: var(--radius-lg);
++      box-shadow: var(--shadow-sm);
++      padding: 24px;
++    }
++
++    .header-panel {
++      display: grid;
++      grid-template-columns: 1.25fr 1fr;
++      gap: 24px;
++      align-items: stretch;
++    }
++
++    .title-block h1 {
++      margin: 0;
++      font-size: clamp(34px, 4vw, 50px);
++      letter-spacing: -0.03em;
++      line-height: 1.05;
++      font-weight: 700;
++    }
++
++    .title-block p {
++      margin: 10px 0 0;
++      color: var(--muted);
++      font-size: 18px;
++      font-weight: 500;
+     }
+ 
+-    .card {
+-      background: white;
+-      border-radius: 16px;
++    .client-card {
++      background: linear-gradient(180deg, #fff, #fbfcff);
++      border: 1px solid var(--line);
++      border-radius: var(--radius-md);
+       padding: 20px;
+-      margin-bottom: 20px;
+-      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
++      display: grid;
++      gap: 16px;
+     }
+ 
+-    .grid {
++    .client-card h2,
++    .section-header h2 {
++      margin: 0;
++      font-size: 20px;
++      letter-spacing: -0.01em;
++    }
++
++    .field-grid {
+       display: grid;
+-      grid-template-columns: repeat(2, 1fr);
+-      gap: 20px;
++      grid-template-columns: repeat(3, minmax(120px, 1fr));
++      gap: 14px;
++    }
++
++    label {
++      display: block;
++      font-size: 12px;
++      color: var(--muted);
++      margin: 0 0 6px;
++      font-weight: 600;
++      letter-spacing: 0.02em;
++      text-transform: uppercase;
+     }
+ 
+-    input, textarea {
++    input,
++    textarea {
+       width: 100%;
+-      padding: 10px;
+-      border-radius: 8px;
+-      border: 1px solid #ddd;
+-      margin-top: 5px;
+-      margin-bottom: 10px;
++      border: 1px solid var(--line);
++      border-radius: var(--radius-sm);
++      background: #fff;
++      color: var(--text);
++      font: inherit;
++      font-size: 15px;
++      padding: 12px 13px;
++      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+     }
+ 
+-    .result {
+-      font-weight: bold;
++    textarea {
++      resize: vertical;
++      min-height: 84px;
+     }
+ 
+-    .highlight {
+-      border: 2px dashed #ccc;
+-      text-align: center;
+-      padding: 20px;
+-      border-radius: 16px;
+-      margin-bottom: 20px;
++    input:focus,
++    textarea:focus {
++      border-color: #a9c2ff;
++      outline: none;
++      box-shadow: 0 0 0 4px var(--accent-soft);
+     }
+ 
+-    .arrow {
+-      text-align: center;
++    .split-layout {
++      display: grid;
++      grid-template-columns: 0.92fr auto 1.42fr;
++      gap: 22px;
++      align-items: start;
++    }
++
++    .reserve-panel {
++      background: var(--surface-soft);
++      border: 1px solid var(--line);
++      border-radius: var(--radius-md);
++      padding: 18px;
++      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
++      display: grid;
++      gap: 12px;
++    }
++
++    .reserve-panel .tag,
++    .portfolio-panel .tag {
++      display: inline-flex;
++      width: fit-content;
++      align-items: center;
++      gap: 8px;
++      background: #f1f4f8;
++      border-radius: 999px;
++      padding: 6px 10px;
++      color: #4f5967;
++      font-size: 12px;
++      font-weight: 600;
++      letter-spacing: 0.02em;
++    }
++
++    .overflow-connector {
++      height: 100%;
++      min-height: 220px;
++      display: grid;
++      place-items: center;
++      color: #7a8390;
++    }
++
++    .overflow-pill {
++      display: grid;
++      justify-items: center;
++      gap: 9px;
++      background: #f8f9fc;
++      border: 1px dashed #c6ceda;
++      border-radius: 999px;
++      padding: 12px 18px;
++      font-size: 13px;
++      font-weight: 600;
++      letter-spacing: 0.02em;
++    }
++
++    .overflow-arrow {
+       font-size: 20px;
+-      margin: 10px 0;
+-      color: #888;
++      line-height: 1;
++      color: #9aa3b2;
+     }
+ 
+-    button {
+-      padding: 10px 20px;
+-      border: none;
+-      border-radius: 10px;
+-      background: black;
+-      color: white;
+-      cursor: pointer;
++    .portfolio-panel {
++      border: 1px solid var(--line);
++      border-radius: var(--radius-md);
++      padding: 18px;
++      background: linear-gradient(180deg, #fff, #fcfdff);
++      display: grid;
++      gap: 18px;
+     }
+ 
+-    @media print {
+-      button { display: none; }
+-      body { background: white; }
++    .portfolio-categories {
++      display: grid;
++      grid-template-columns: repeat(2, minmax(0, 1fr));
++      gap: 14px;
+     }
+-  </style>
+-</head>
+ 
+-<body>
+-<div class="container">
++    .category-card {
++      border: 1px solid var(--line);
++      border-radius: var(--radius-md);
++      background: #fff;
++      padding: 14px;
++      display: grid;
++      gap: 10px;
++      box-shadow: 0 4px 10px rgba(17, 24, 39, 0.03);
++    }
+ 
+-  <h1>Robustes Portfolio</h1>
++    .category-head {
++      display: flex;
++      justify-content: space-between;
++      align-items: baseline;
++      gap: 8px;
++    }
+ 
+-  <div class="card">
+-    <label>Kundename</label>
+-    <input id="name">
++    .category-head h3 {
++      margin: 0;
++      font-size: 16px;
++      letter-spacing: -0.01em;
++    }
+ 
+-    <label>Datum</label>
+-    <input id="date" type="date">
++    .pct {
++      font-size: 14px;
++      color: var(--accent);
++      font-weight: 700;
++      background: var(--accent-soft);
++      border-radius: 999px;
++      padding: 4px 10px;
++      min-width: 72px;
++      text-align: center;
++    }
+ 
+-    <label>Gesamtsumme (€)</label>
+-    <input id="total" type="number" oninput="calculate()">
+-  </div>
++    .vv-group {
++      border: 1px solid #d7e2ff;
++      background: linear-gradient(180deg, #f8faff, #fdfdff);
++      border-radius: var(--radius-md);
++      padding: 16px;
++      display: grid;
++      gap: 12px;
++      box-shadow: inset 0 0 0 1px rgba(47, 109, 246, 0.04);
++    }
+ 
+-  <!-- Tagesgeld -->
+-  <div class="card">
+-    <h2>Tagesgeld</h2>
+-    <input placeholder="Betrag" id="tagesgeld" type="number" oninput="calculate()">
+-    <input placeholder="Sockelbetrag (optional)" id="tagesgeldSockel" type="number">
+-    <textarea placeholder="Notizen"></textarea>
+-  </div>
++    .vv-subgrid {
++      display: grid;
++      grid-template-columns: repeat(3, minmax(0, 1fr));
++      gap: 12px;
++    }
++
++    .vv-card {
++      border-radius: var(--radius-sm);
++      background: #fff;
++      border: 1px solid #dbe5ff;
++      padding: 12px;
++      display: grid;
++      gap: 10px;
++    }
++
++    .vv-card.defensiv { border-top: 4px solid #3f80ff; }
++    .vv-card.ausgewogen { border-top: 4px solid #5d70ff; }
++    .vv-card.dynamisch { border-top: 4px solid #7e56da; }
++
++    .summary-panel {
++      display: grid;
++      grid-template-columns: repeat(3, minmax(0, 1fr));
++      gap: 14px;
++    }
++
++    .summary-card {
++      border-radius: var(--radius-md);
++      border: 1px solid var(--line);
++      background: #fff;
++      padding: 16px;
++      display: grid;
++      gap: 10px;
++    }
++
++    .summary-card h3 {
++      margin: 0;
++      color: var(--muted);
++      font-size: 13px;
++      text-transform: uppercase;
++      letter-spacing: 0.04em;
++    }
++
++    .summary-value {
++      font-size: clamp(24px, 2.7vw, 34px);
++      line-height: 1.1;
++      font-weight: 700;
++      letter-spacing: -0.02em;
++    }
++
++    .status-note {
++      margin: 0;
++      font-size: 14px;
++      color: var(--muted);
++    }
++
++    .summary-diff.balanced .summary-value,
++    .summary-diff.balanced .status-note { color: var(--success); }
++    .summary-diff.open .summary-value,
++    .summary-diff.open .status-note { color: var(--warning); }
++    .summary-diff.over .summary-value,
++    .summary-diff.over .status-note { color: var(--danger); }
++
++    .actions {
++      display: flex;
++      justify-content: flex-end;
++    }
++
++    button {
++      appearance: none;
++      border: none;
++      background: #111827;
++      color: #fff;
++      border-radius: 999px;
++      padding: 12px 18px;
++      font-size: 14px;
++      font-weight: 600;
++      cursor: pointer;
++      box-shadow: var(--shadow-sm);
++      transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
++    }
++
++    button:hover {
++      transform: translateY(-1px);
++      box-shadow: var(--shadow-md);
++    }
++
++    button:active {
++      transform: translateY(0);
++      opacity: 0.92;
++    }
+ 
+-  <div class="arrow">⬇ Überlauf ⬇</div>
++    @media (max-width: 1100px) {
++      .header-panel,
++      .split-layout,
++      .vv-subgrid,
++      .summary-panel {
++        grid-template-columns: 1fr;
++      }
++
++      .portfolio-categories,
++      .field-grid {
++        grid-template-columns: 1fr;
++      }
++
++      .overflow-connector {
++        min-height: auto;
++      }
++    }
+ 
+-  <!-- Hauptportfolio -->
+-  <div class="card">
+-    <h2>Portfolio</h2>
++    @media print {
++      @page {
++        size: A4;
++        margin: 12mm;
++      }
++
++      body {
++        background: #fff;
++        padding: 0;
++        font-size: 10.5pt;
++      }
++
++      .container {
++        gap: 9px;
++        max-width: 100%;
++      }
++
++      .panel,
++      .client-card,
++      .reserve-panel,
++      .portfolio-panel,
++      .category-card,
++      .vv-group,
++      .vv-card,
++      .summary-card {
++        box-shadow: none !important;
++        break-inside: avoid;
++      }
++
++      .actions {
++        display: none;
++      }
++
++      textarea {
++        min-height: 70px;
++      }
++
++      .overflow-pill {
++        border-style: solid;
++      }
++
++      .pct {
++        border: 1px solid #cfd8eb;
++      }
++    }
++  </style>
++</head>
+ 
+-    <div class="grid">
+-      <div>
+-        <h3>Krisenkasse</h3>
+-        <input placeholder="Betrag" id="krise" type="number" oninput="calculate()">
+-        <input placeholder="Sockelbetrag" id="kriseSockel" type="number">
+-        <textarea placeholder="Notizen"></textarea>
+-        <div class="result" id="krisePct"></div>
++<body>
++  <div class="container">
++    <section class="panel header-panel">
++      <div class="title-block">
++        <h1>Robustes Portfolio</h1>
++        <p>Strategie schlägt Zufall</p>
+       </div>
+ 
+-      <div>
+-        <h3>Investitionsreserve</h3>
+-        <input placeholder="Betrag" id="reserve" type="number" oninput="calculate()">
+-        <textarea placeholder="Notizen"></textarea>
+-        <div class="result" id="reservePct"></div>
++      <div class="client-card">
++        <h2>Mandantenprofil</h2>
++        <div class="field-grid">
++          <div>
++            <label for="name">Kundename</label>
++            <input id="name" placeholder="Max Mustermann" />
++          </div>
++          <div>
++            <label for="date">Datum</label>
++            <input id="date" type="date" />
++          </div>
++          <div>
++            <label for="total">Gesamtstrategie-Summe (€)</label>
++            <input id="total" type="number" min="0" step="0.01" oninput="calculate()" placeholder="0" />
++          </div>
++        </div>
++      </div>
++    </section>
++
++    <section class="panel split-layout">
++      <div class="reserve-panel">
++        <span class="tag">Strategische Reserve</span>
++        <div class="section-header">
++          <h2>Tagesgeld / Notgroschen</h2>
++        </div>
++        <div>
++          <label for="tagesgeld">Betrag (€)</label>
++          <input id="tagesgeld" type="number" min="0" step="0.01" oninput="calculate()" placeholder="0" />
++        </div>
++        <div>
++          <label for="tagesgeldSockel">Sockelbetrag (€) (ohne Allokationswirkung)</label>
++          <input id="tagesgeldSockel" type="number" min="0" step="0.01" placeholder="0" />
++        </div>
++        <div>
++          <label for="tagesgeldNote">Notiz</label>
++          <textarea id="tagesgeldNote" placeholder="Liquiditätszweck, Zugriffshorizont, Hinweise …"></textarea>
++        </div>
+       </div>
+ 
+-      <div>
+-        <h3>Vermögensverwaltung</h3>
+-        <input placeholder="Betrag" id="vv" type="number" oninput="calculate()">
+-        <textarea placeholder="Notizen"></textarea>
+-        <div class="result" id="vvPct"></div>
++      <div class="overflow-connector" aria-label="Überlauf-Visual">
++        <div class="overflow-pill">
++          <span>Überlauf</span>
++          <span class="overflow-arrow">↓</span>
++        </div>
+       </div>
+ 
+-      <div>
+-        <h3>Märkte / Branchen</h3>
+-        <input placeholder="Betrag" id="markt" type="number" oninput="calculate()">
+-        <textarea placeholder="Notizen"></textarea>
+-        <div class="result" id="marktPct"></div>
++      <div class="portfolio-panel">
++        <span class="tag">Hauptportfolio</span>
++        <div class="section-header">
++          <h2>Strategische Portfolio-Struktur</h2>
++        </div>
++
++        <div class="portfolio-categories">
++          <article class="category-card">
++            <div class="category-head">
++              <h3>Krisenkasse</h3>
++              <span class="pct" id="krisePct">0,0 %</span>
++            </div>
++            <div>
++              <label for="krise">Betrag (€)</label>
++              <input id="krise" type="number" min="0" step="0.01" oninput="calculate()" placeholder="0" />
++            </div>
++            <div>
++              <label for="kriseNote">Notiz</label>
++              <textarea id="kriseNote" placeholder="Auslöser, Risikoereignisse, Zugriffspfad …"></textarea>
++            </div>
++          </article>
++
++          <article class="category-card">
++            <div class="category-head">
++              <h3>Investitionsreserve</h3>
++              <span class="pct" id="reservePct">0,0 %</span>
++            </div>
++            <div>
++              <label for="reserve">Betrag (€)</label>
++              <input id="reserve" type="number" min="0" step="0.01" oninput="calculate()" placeholder="0" />
++            </div>
++            <div>
++              <label for="reserveNote">Notiz</label>
++              <textarea id="reserveNote" placeholder="Einstiegslogik, Haltezeiten, Flexibilität …"></textarea>
++            </div>
++          </article>
++
++          <article class="category-card">
++            <div class="category-head">
++              <h3>Märkte / Branchen</h3>
++              <span class="pct" id="marktPct">0,0 %</span>
++            </div>
++            <div>
++              <label for="markt">Betrag (€)</label>
++              <input id="markt" type="number" min="0" step="0.01" oninput="calculate()" placeholder="0" />
++            </div>
++            <div>
++              <label for="marktNote">Notiz</label>
++              <textarea id="marktNote" placeholder="Makro-These, Regionen, Schwerpunkte …"></textarea>
++            </div>
++          </article>
++
++          <article class="category-card">
++            <div class="category-head">
++              <h3>Spezialitäten</h3>
++              <span class="pct" id="spezialPct">0,0 %</span>
++            </div>
++            <div>
++              <label for="spezial">Betrag (€)</label>
++              <input id="spezial" type="number" min="0" step="0.01" oninput="calculate()" placeholder="0" />
++            </div>
++            <div>
++              <label for="spezialNote">Notiz</label>
++              <textarea id="spezialNote" placeholder="Sondersituationen, Satelliten, Chancen …"></textarea>
++            </div>
++          </article>
++        </div>
++
++        <section class="vv-group">
++          <div class="category-head">
++            <h3>Vermögensverwaltung</h3>
++            <span class="pct" id="vvTotalPct">0,0 % gesamt</span>
++          </div>
++
++          <div class="vv-subgrid">
++            <article class="vv-card defensiv">
++              <div class="category-head">
++                <h3>Defensiv</h3>
++                <span class="pct" id="vvDefPct">0,0 %</span>
++              </div>
++              <div>
++                <label for="vvDef">Betrag (€)</label>
++                <input id="vvDef" type="number" min="0" step="0.01" oninput="calculate()" placeholder="0" />
++              </div>
++              <div>
++                <label for="vvDefNote">Notiz</label>
++                <textarea id="vvDefNote" placeholder="Kapitalschutz, Volatilitätsziel …"></textarea>
++              </div>
++            </article>
++
++            <article class="vv-card ausgewogen">
++              <div class="category-head">
++                <h3>Ausgewogen</h3>
++                <span class="pct" id="vvAusPct">0,0 %</span>
++              </div>
++              <div>
++                <label for="vvAus">Betrag (€)</label>
++                <input id="vvAus" type="number" min="0" step="0.01" oninput="calculate()" placeholder="0" />
++              </div>
++              <div>
++                <label for="vvAusNote">Notiz</label>
++                <textarea id="vvAusNote" placeholder="Strategische Mitte, Zielkorridor …"></textarea>
++              </div>
++            </article>
++
++            <article class="vv-card dynamisch">
++              <div class="category-head">
++                <h3>Dynamisch</h3>
++                <span class="pct" id="vvDynPct">0,0 %</span>
++              </div>
++              <div>
++                <label for="vvDyn">Betrag (€)</label>
++                <input id="vvDyn" type="number" min="0" step="0.01" oninput="calculate()" placeholder="0" />
++              </div>
++              <div>
++                <label for="vvDynNote">Notiz</label>
++                <textarea id="vvDynNote" placeholder="Renditefokus, Opportunitäten …"></textarea>
++              </div>
++            </article>
++          </div>
++        </section>
+       </div>
++    </section>
+ 
+-      <div>
+-        <h3>Spezialitäten</h3>
+-        <input placeholder="Betrag" id="spezial" type="number" oninput="calculate()">
+-        <textarea placeholder="Notizen"></textarea>
+-        <div class="result" id="spezialPct"></div>
++    <section class="panel">
++      <div class="section-header" style="margin-bottom: 14px;">
++        <h2>Zusammenfassung</h2>
+       </div>
+-    </div>
+-  </div>
++      <div class="summary-panel">
++        <article class="summary-card">
++          <h3>Gesamtstrategie-Summe</h3>
++          <div class="summary-value" id="sumTotal">0,00 €</div>
++          <p class="status-note">Planungsrahmen laut Mandat.</p>
++        </article>
++
++        <article class="summary-card">
++          <h3>Allokierte Beträge</h3>
++          <div class="summary-value" id="sumAllocated">0,00 €</div>
++          <p class="status-note">Inkl. Tagesgeld und aller Portfolio-Bausteine.</p>
++        </article>
++
++        <article class="summary-card summary-diff balanced" id="diffCard">
++          <h3>Differenz</h3>
++          <div class="summary-value" id="sumDiff">0,00 €</div>
++          <p class="status-note" id="diffNote">Plan vollständig ausbalanciert.</p>
++        </article>
++      </div>
++    </section>
+ 
+-  <!-- Ergebnis -->
+-  <div class="card">
+-    <h2>Übersicht</h2>
+-    <div id="summary"></div>
++    <div class="actions">
++      <button type="button" onclick="window.print()">Drucken / PDF</button>
++    </div>
+   </div>
+ 
+-  <button onclick="window.print()">Drucken / PDF</button>
+-
+-</div>
+-
+-<script>
+-function calculate() {
+-  let total = parseFloat(document.getElementById("total").value) || 0;
+-
+-  let fields = {
+-    krise: "krisePct",
+-    reserve: "reservePct",
+-    vv: "vvPct",
+-    markt: "marktPct",
+-    spezial: "spezialPct"
+-  };
+-
+-  let sum = 0;
+-
+-  for (let key in fields) {
+-    let val = parseFloat(document.getElementById(key).value) || 0;
+-    sum += val;
++  <script>
++    const percentageFields = {
++      tagesgeld: null,
++      krise: "krisePct",
++      reserve: "reservePct",
++      markt: "marktPct",
++      spezial: "spezialPct",
++      vvDef: "vvDefPct",
++      vvAus: "vvAusPct",
++      vvDyn: "vvDynPct"
++    };
++
++    function valueOf(id) {
++      return parseFloat(document.getElementById(id).value) || 0;
++    }
+ 
+-    let pct = total ? ((val / total) * 100).toFixed(1) : 0;
+-    document.getElementById(fields[key]).innerText = pct + " %";
+-  }
++    function formatCurrency(value) {
++      return new Intl.NumberFormat("de-DE", {
++        style: "currency",
++        currency: "EUR",
++        minimumFractionDigits: 2,
++        maximumFractionDigits: 2
++      }).format(value || 0);
++    }
+ 
+-  let tagesgeld = parseFloat(document.getElementById("tagesgeld").value) || 0;
+-  sum += tagesgeld;
++    function formatPercent(value) {
++      return `${value.toFixed(1).replace(".", ",")} %`;
++    }
+ 
+-  let diff = total - sum;
++    function setPct(id, value, total) {
++      if (!id) return;
++      const pct = total > 0 ? (value / total) * 100 : 0;
++      document.getElementById(id).textContent = formatPercent(pct);
++    }
+ 
+-  document.getElementById("summary").innerText =
+-    "Verteilt: " + sum + " € | Differenz: " + diff + " €";
+-}
+-</script>
++    function calculate() {
++      const total = valueOf("total");
++
++      let allocated = 0;
++      Object.entries(percentageFields).forEach(([field, pctId]) => {
++        const value = valueOf(field);
++        allocated += value;
++        setPct(pctId, value, total);
++      });
++
++      const vvTotal = valueOf("vvDef") + valueOf("vvAus") + valueOf("vvDyn");
++      const vvPctText = `${formatPercent(total > 0 ? (vvTotal / total) * 100 : 0)} gesamt`;
++      document.getElementById("vvTotalPct").textContent = vvPctText;
++
++      const diff = total - allocated;
++
++      document.getElementById("sumTotal").textContent = formatCurrency(total);
++      document.getElementById("sumAllocated").textContent = formatCurrency(allocated);
++      document.getElementById("sumDiff").textContent = formatCurrency(diff);
++
++      const diffCard = document.getElementById("diffCard");
++      const diffNote = document.getElementById("diffNote");
++
++      diffCard.classList.remove("balanced", "open", "over");
++
++      if (Math.abs(diff) < 0.01) {
++        diffCard.classList.add("balanced");
++        diffNote.textContent = "Plan vollständig ausbalanciert.";
++      } else if (diff > 0) {
++        diffCard.classList.add("open");
++        diffNote.textContent = "Noch nicht allokiert: strategischer Spielraum offen.";
++      } else {
++        diffCard.classList.add("over");
++        diffNote.textContent = "Überallokation: bitte Beträge nachjustieren.";
++      }
++    }
+ 
++    calculate();
++  </script>
+ </body>
+ </html>
